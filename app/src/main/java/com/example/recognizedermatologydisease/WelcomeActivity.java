@@ -1,5 +1,9 @@
 package com.example.recognizedermatologydisease;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -28,8 +32,10 @@ public class WelcomeActivity extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private int[] layouts;
+    private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 195;
     private Button btnSkip, btnNext;
     private PrefManager prefManager;
+    private boolean is_permiss = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,7 +1,11 @@
 package com.example.recognizedermatologydisease;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +19,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED)
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+            } else {
+                // No explanation needed; request the permission
+
+                ActivityCompat.requestPermissions(this, (new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}), 100);
+            }
         setContentView(R.layout.activity_main);
         btn_start = findViewById(R.id.btn_start);
         mProgressDialog = new ProgressDialog(this);
