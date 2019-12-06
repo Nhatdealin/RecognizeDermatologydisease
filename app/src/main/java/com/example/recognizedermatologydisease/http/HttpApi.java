@@ -59,7 +59,7 @@ public interface HttpApi {
      * Execute http request with get method
      *
      * @param requestUrl
-     * @param params
+//     * @param params
      * @return The response string
      * @throws IOException
      */
@@ -71,7 +71,7 @@ public interface HttpApi {
      * Execute http request with post method and body is json object (raw)
      *
      * @param requestUrl
-     * @param jsonObject
+//     * @param jsonObject
      * @return The response string
      * @throws IOException
      * @throws ApiException

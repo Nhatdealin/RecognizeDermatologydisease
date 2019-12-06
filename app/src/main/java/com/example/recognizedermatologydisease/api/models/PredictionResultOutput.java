@@ -1,19 +1,20 @@
 package com.example.recognizedermatologydisease.api.models;
 
-import com.example.recognizedermatologydisease.models.DataLogin;
+import com.example.recognizedermatologydisease.models.PredictionResult;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 
 
 /**
  * Created by Admin on 4/13/2017.
  */
 
-public class LoginOutput extends BaseOutput {
-
+public class PredictionResultOutput extends BaseOutput {
     @SerializedName("message")
-    public String message;
+    private String message;
     @SerializedName("data")
-    public DataLogin data ;
+    private ArrayList<PredictionResult> data;
 
     public String getMessage() {
         return message;
@@ -23,11 +24,11 @@ public class LoginOutput extends BaseOutput {
         this.message = message;
     }
 
-    public DataLogin getData() {
+    public ArrayList<PredictionResult> getData() {
         return data;
     }
 
-    public void setData(DataLogin data) {
+    public void setData(ArrayList<PredictionResult> data) {
         this.data = data;
     }
 }

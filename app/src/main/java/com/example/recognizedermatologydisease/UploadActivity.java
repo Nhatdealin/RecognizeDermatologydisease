@@ -48,6 +48,7 @@ import java.util.Date;
 public class UploadActivity extends AppCompatActivity implements View.OnClickListener{
     private final int PICK_IMAGE_REQUEST = 71;
     private static final int SELECT_PICTURE = 279;
+    static final int REQUEST_VIDEO_CAPTURE = 190;
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 195;
     private Uri mImageCaptureUri;
     private ArrayList<Uri> mListImageCaptureUri;
@@ -57,7 +58,7 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
     private String Document_img1="";
     int maxCrop = 0;
     int countCrop = 0;
-    private Button btnChoseImage, btnCamera;
+    private Button btnChoseImage, btnRecord;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,13 +68,13 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         mListFile = new ArrayList<File>();
         mListImageCaptureUri = new ArrayList<Uri>();
         btnChoseImage = findViewById(R.id.btn_upload_file);
-        btnCamera = findViewById(R.id.btn_take_photo);
+        btnRecord = findViewById(R.id.btn_take_record);
         addListener();
     }
 
     protected void addListener() {
         btnChoseImage.setOnClickListener(this);
-        btnCamera.setOnClickListener(this);
+        btnRecord.setOnClickListener(this);
     }
 
 
@@ -89,6 +90,13 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         //takePictureIntent.putExtra("return-data", true);
         //takePictureIntent.putExtra(MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
         startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    public void onClickTakeARecord() {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
     }
 
     private void onClickChooseFromGallery() {
@@ -159,9 +167,6 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                     } catch (NullPointerException ex) {
                         ex.printStackTrace();
                     }
-                    maxCrop = 1;
-                    countCrop = 0;
-                    doCrop();
                     break;
                 case SELECT_PICTURE:
                     countCrop = 0;
@@ -189,9 +194,18 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                             }
 
                             myImagePath = newName;
-                            doCrop();
+
                             }
                         }
+
+                    break;
+                case REQUEST_VIDEO_CAPTURE:
+                    mListFile = new ArrayList<File>();
+                    mListImageCaptureUri = new ArrayList<Uri>();
+                    if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+                        Uri videoUri = data.getData();
+                        mListImageCaptureUri.add(videoUri);
+                    }
 
                     break;
                 case Crop.REQUEST_CROP:
@@ -221,14 +235,6 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                         mListFile.add(f);
 
                     }
-                    countCrop ++;
-                    if (countCrop >= maxCrop){
-                        Intent intent2 = new Intent(UploadActivity.this, UploadedImageActivity.class);
-                        intent2.putExtra("listuri",mListImageCaptureUri);
-                        startActivity(intent2);
-                    }
-
-
                     break;
             }
 
@@ -264,21 +270,21 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void selectImage() {
-        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        final CharSequence[] options = { "Chụp ảnh", "Chọn ảnh từ thư viện","Hủy" };
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(UploadActivity.this);
-        builder.setTitle("Add Photo!");
+        builder.setTitle("Tải dữ liệu!");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Take Photo"))
+                if (options[item].equals("Chụp ảnh"))
                 {
                     onClickTakeAPhoto();
                 }
-                else if (options[item].equals("Choose from Gallery"))
+                else if (options[item].equals("Chọn ảnh từ thư viện"))
                 {
                     onClickChooseFromGallery();
                 }
-                else if (options[item].equals("Cancel")) {
+                else if (options[item].equals("Hủy")) {
                     dialog.dismiss();
                 }
             }
@@ -286,96 +292,14 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         builder.show();
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == 1) {
-//                File f = new File(Environment.getExternalStorageDirectory().toString());
-//                for (File temp : f.listFiles()) {
-//                    if (temp.getName().equals("temp.jpg")) {
-//                        f = temp;
-//                        break;
-//                    }
-//                }
-//                try {
-//                    Bitmap bitmap;
-//                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-//                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), bitmapOptions);
-//                    bitmap=getResizedBitmap(bitmap, 400);
-//                    imvReview.setImageBitmap(bitmap);
-//                    BitMapToString(bitmap);
-//                    String path = android.os.Environment
-//                            .getExternalStorageDirectory()
-//                            + File.separator
-//                            + "Phoenix" + File.separator + "default";
-//                    f.delete();
-//                    OutputStream outFile = null;
-//                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
-//                    try {
-//                        outFile = new FileOutputStream(file);
-//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-//                        outFile.flush();
-//                        outFile.close();
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            } else if (requestCode == 2) {
-//                Uri selectedImage = data.getData();
-//                String[] filePath = { MediaStore.Images.Media.DATA };
-//                Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
-//                c.moveToFirst();
-//                int columnIndex = c.getColumnIndex(filePath[0]);
-//                String picturePath = c.getString(columnIndex);
-//                c.close();
-//                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-//                thumbnail=getResizedBitmap(thumbnail, 400);
-//                Log.w("path of imagegallery...", picturePath+"");
-//                imvReview.setImageBitmap(thumbnail);
-//                BitMapToString(thumbnail);
-//            }
-//        }
-//    }
-//    public String BitMapToString(Bitmap userImage1) {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
-//        byte[] b = baos.toByteArray();
-//        Document_img1 = Base64.encodeToString(b, Base64.DEFAULT);
-//        return Document_img1;
-//    }
-//
-//    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
-//        int width = image.getWidth();
-//        int height = image.getHeight();
-//
-//        float bitmapRatio = (float)width / (float) height;
-//        if (bitmapRatio > 1) {
-//            width = maxSize;
-//            height = (int) (width / bitmapRatio);
-//        } else {
-//            height = maxSize;
-//            width = (int) (height * bitmapRatio);
-//        }
-//        return Bitmap.createScaledBitmap(image, width, height, true);
-//    }
-//
-//    private void SendDetail() {
-//    }
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_upload_file:
                 selectImage();
                 break;
-            case R.id.btn_take_photo:
-                onClickTakeAPhoto();
+            case R.id.btn_take_record:
+                onClickTakeARecord();
                 break;
         }
     }

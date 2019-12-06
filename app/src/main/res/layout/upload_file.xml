@@ -7,7 +7,7 @@
     android:background="@drawable/background2">
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="220dp"
         android:orientation="vertical"
         android:gravity="center">
         <ImageView
@@ -21,50 +21,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center">
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:orientation="horizontal">
-           <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:textSize="15sp"
-               android:layout_marginLeft="15dp"
-               android:layout_marginRight="20dp"
-               android:text="Tải ảnh/chụp ảnh để được\n
-hỗ trợ dự đoán bệnh da liễu"
-               android:paddingBottom="00dp"/>
            <Button
                android:layout_width="150dp"
                android:layout_height="wrap_content"
                android:id="@+id/btn_upload_file"
-               android:text="Tải ảnh "
+               android:text="Tải dữ liệu"
                android:background="@color/colorAccent"
                />
-       </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="70dp"
-            android:layout_gravity="top">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="20dp"
-                android:paddingBottom="10dp"
-                android:text="Tải ảnh/video để được\n
-hỗ trợ dự đoán bệnh da liễu"
-                android:textSize="15sp" />
             <Button
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_take_photo"
-                android:text="Chụp ảnh"
+                android:id="@+id/btn_take_record"
+                android:text="Quay video"
+                android:layout_marginTop="100dp"
                 android:background="@color/colorAccent"/>
-        </LinearLayout>
 
 
     </LinearLayout>
