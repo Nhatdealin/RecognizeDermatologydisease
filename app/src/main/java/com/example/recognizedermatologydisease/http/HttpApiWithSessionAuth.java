@@ -339,13 +339,13 @@ public class HttpApiWithSessionAuth extends AbstractHttpApi {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("Content-Disposition", "form-data");
         map.put("Accept", "application/json");
-        if (hasCredentials()) {
-            map.put("Lang", "en");
-            map.put("Authorization", mToken);
-        }
+//        if (hasCredentials()) {
+//            map.put("Lang", "en");
+//            map.put("Authorization", mToken);
+//        }
         JSONObject jsonResult = new JSONObject(executeHttpMultipartImages(requestUrl, map, params, files));
-        try {
-            if(jsonResult.getInt("ErrorCode") == Constants.FAILURE_SESSION_EXPIRED){
+//        try {
+//            if(jsonResult.getInt("ErrorCode") == Constants.FAILURE_SESSION_EXPIRED){
 //                if(getNewSession()) {
 //                    map = new LinkedHashMap<>();
 //                    map.put("Content-Disposition", "form-data");
@@ -357,12 +357,12 @@ public class HttpApiWithSessionAuth extends AbstractHttpApi {
 //                    }
 //                    return new JSONObject(executeHttpMultipartImages(requestUrl, map, params, files));
 //                } else {
-                    return jsonResult;
+//                    return jsonResult;
 //                }
-            }
-        } catch (JSONException ex){
-
-        }
+//            }
+//        } catch (JSONException ex){
+//
+//        }
         return jsonResult;
 //        } catch (ApiException e) {
 //            if (e.getErrorCode() == Constants.FAILURE_SESSION_EXPIRED) {

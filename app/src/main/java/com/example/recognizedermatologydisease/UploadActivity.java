@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +31,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.recognizedermatologydisease.api.ApiListener;
+import com.example.recognizedermatologydisease.api.models.PredictionResultOutput;
+import com.example.recognizedermatologydisease.api.objects.PredictInput;
+import com.example.recognizedermatologydisease.tasks.BaseTask;
+import com.example.recognizedermatologydisease.tasks.PredictTask;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
@@ -45,10 +51,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class UploadActivity extends AppCompatActivity implements View.OnClickListener{
+public class UploadActivity extends AppCompatActivity implements ApiListener, View.OnClickListener{
     private final int PICK_IMAGE_REQUEST = 71;
     private static final int SELECT_PICTURE = 279;
     static final int REQUEST_VIDEO_CAPTURE = 190;
+    protected ProgressDialog mProgressDialog;
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 195;
     private Uri mImageCaptureUri;
     private ArrayList<Uri> mListImageCaptureUri;
@@ -65,6 +72,9 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.upload_file);
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage(getString(R.string.txt_waiting));
         mListFile = new ArrayList<File>();
         mListImageCaptureUri = new ArrayList<Uri>();
         btnChoseImage = findViewById(R.id.btn_upload_file);
@@ -155,6 +165,8 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                                 try {
                                     fos.write(bitmapdata);
                                     mImageCaptureUri = Uri.fromFile(f);
+                                    mListFile.add(f);
+                                    predictFiles();
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -169,14 +181,10 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                     }
                     break;
                 case SELECT_PICTURE:
-                    countCrop = 0;
                     mListFile = new ArrayList<File>();
                     mListImageCaptureUri = new ArrayList<Uri>();
-                    if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                            && (null == data.getData()))
-                    {
-                        ClipData clipdata = data.getClipData();
-                        maxCrop = clipdata.getItemCount();
+                    ClipData clipdata = data.getClipData();
+                    if (clipdata != null) {
                         for (int i=0; i<clipdata.getItemCount();i++)
                         {
                             mImageCaptureUri = clipdata.getItemAt(i).getUri();
@@ -194,9 +202,18 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                             }
 
                             myImagePath = newName;
+                            mListFile.add(finalFile1);
 
-                            }
                         }
+                }
+                else
+                    {
+                        mImageCaptureUri = data.getData();
+                        File finalFile2 = new File(getRealPathFromURI(mImageCaptureUri));
+                        mListFile.add(finalFile2);
+                    }
+
+                    predictFiles();
 
                     break;
                 case REQUEST_VIDEO_CAPTURE:
@@ -205,7 +222,9 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                     if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
                         Uri videoUri = data.getData();
                         mListImageCaptureUri.add(videoUri);
+                        mListFile.add(new File((videoUri.toString())));
                     }
+                    predictFiles();
 
                     break;
                 case Crop.REQUEST_CROP:
@@ -269,6 +288,11 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         out.close();
     }
 
+    public void predictFiles() {
+        showLoading(true);
+        new PredictTask(this, mListFile, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     private void selectImage() {
         final CharSequence[] options = { "Chụp ảnh", "Chọn ảnh từ thư viện","Hủy" };
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(UploadActivity.this);
@@ -292,11 +316,13 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         builder.show();
     }
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_upload_file:
                 selectImage();
+
                 break;
             case R.id.btn_take_record:
                 onClickTakeARecord();
@@ -304,4 +330,36 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private void showLoading(boolean isShow) {
+        try {
+            if (isShow) {
+                mProgressDialog.show();
+            } else {
+                if (mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+        } catch (IllegalArgumentException ex) {
+        }
+    }
+
+    @Override
+    public void onConnectionOpen(BaseTask task) {
+
+    }
+
+    @Override
+    public void onConnectionSuccess(BaseTask task, Object data) {
+        if (task instanceof PredictTask) {
+            PredictionResultOutput output1 = (PredictionResultOutput) data;
+//            showLoading(false);
+
+        }
+
+    }
+
+    @Override
+    public void onConnectionError(BaseTask task, Exception exception) {
+
+    }
 }

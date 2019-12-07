@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.example.recognizedermatologydisease.api.exception.ApiException;
 import com.example.recognizedermatologydisease.api.models.BaseOutput;
+import com.example.recognizedermatologydisease.api.models.PredictionResultOutput;
+import com.example.recognizedermatologydisease.api.objects.PredictInput;
 import com.example.recognizedermatologydisease.http.HttpApiWithSessionAuth;
 import com.example.recognizedermatologydisease.utils.Constants;
 import com.example.recognizedermatologydisease.utils.SharedPreferenceHelper;
@@ -22,27 +24,8 @@ import java.util.logging.Logger;
  */
 public class TaskApi {
     // URL
-    public static final String TASK_WS = "http://222.255.167.89/svdanang-0.0.1-SNAPSHOT/api/";//DEV api
-    public static final String LOGIN_API = "auth/signin";
-    public static final String SIGNUP_API = "auth/signup";
-    public static final String SIGNUP_VOLUNTEER_API = "volunteers?event_id=%s";
-    public static final String PROFILE_API = "users/me";
-    public static final String PROJECT_API = "projects?sortBy&t&sortOrder=desc&page=%s&pageSize=%s";
-    public static final String EVENT_API = "events?filter&sortBy&sortOrder=desc&page=%s&pageSize=%s";
-    public static final String EVENT_BY_ID_API = "events/%s";
-    public static final String BLOGPOST_TOPIC_API = "blog-topics?filter&sortBy&sortOrder=desc&page=%s&pageSize=%s";
-    public static final String BLOGPOSTS_TOPIC_ID_API = "blog-posts?topicId=%s&sortBy&sortOrder&page=%s&pageSize=%s";
-    public static final String BLOGPOSTS_ALL_API = "blog-posts?sortBy&sortOrder=desc&page=%s&pageSize=%s";
-    public static final String BLOGPOSTS_BY_ID_API = "blog-posts/%s";
-    public static final String PROJECT_BY_ID_API = "projects/%s";
-    public static final String PAYPAL_DONATION_API = "paypal/make/payment";
-    public static final String PAYPAL_DONATION_RESULT_API = "paypal/complete/payment/%s?paymentId=%s&token=%s&PayerID=%s";
-    public static final String UPLOAD_AVATAR_API = "uploadFile";
-    public static final String LOGOUT_API = "logout";
-    public static final String CHANGE_PASSWORD_API = "users/me/password";
-    public static final String FORGOT_PASSWORD_API = "auth/forgot";
-    public static final String FORGOT_ENTER_CODE_API = "password/validateactivecode";
-    public static final String RESET_PASSWORD_API = "password/reset";
+    public static final String TASK_WS = "http://http://nhatthao.hoangddt.net/app/";//DEV api
+    public static final String PREDICT_API = "upload";
 
 
     private static final Logger LOG = Logger
@@ -73,11 +56,11 @@ public class TaskApi {
         return mDomain + subUrl;
     }
 
-//    public LoginOutput loginByEmail(LoginInput input) throws ApiException, JSONException, IOException {
-//        JSONObject data = mHttpApi.doHttpPost(getFullUrl(LOGIN_API), new Gson().toJson(input));
-//        LoginOutput output = mGson.fromJson(data.toString(), LoginOutput.class);
-//        return output;
-//    }
+    public PredictionResultOutput predict(PredictInput input) throws ApiException, JSONException, IOException {
+        JSONObject data = mHttpApi.doHttpMultipartImages(getFullUrl(PREDICT_API), new HashMap<String, String>(), input.getFiles());
+        PredictionResultOutput output = mGson.fromJson(data.toString(), PredictionResultOutput.class);
+        return output;
+    }
 //
 //    public BaseOutput logout() throws ApiException, JSONException, IOException {
 //        JSONObject data = mHttpApi.doHttpPost(getFullUrl(LOGOUT_API), "");
